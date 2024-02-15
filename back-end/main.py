@@ -1,16 +1,10 @@
-from fastapi import FastAPI, status, Response
-from models.models import PostProduct
-from config.database import supabase
+from fastapi import FastAPI, status, Response, HTTPException
+from routers import product_router
 
 app = FastAPI()
 
+app.include_router(product_router.router)
 
-@app.post("/create_product")
-def create_product(post: PostProduct, response: Response):
-    if post:
-        data, count = supabase.table('products').insert(post.dict()).execute()
-        return data
-    else:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return
 
+def home():
+    return {"message": "You are in our home page, head to /docs to see API's documentation"}
