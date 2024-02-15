@@ -1,5 +1,6 @@
 from fastapi import APIRouter, status, Response, HTTPException
 from pydantic import BaseModel
+from typing import Optional
 import os
 from dotenv import load_dotenv
 from supabase import create_client
@@ -17,6 +18,13 @@ class PostProduct(BaseModel):
     category: str
     quantity: int
     price: float
+
+
+class UpdateProduct(BaseModel):
+    name: Optional[str] = None
+    category: Optional[str] = None
+    quantity: Optional[int] = None
+    price: Optional[float] = None
 
 
 supabaseUrl = "https://cvuiuqgykwoicwpavhrs.supabase.co"
@@ -39,7 +47,7 @@ def create_product(post: PostProduct, response: Response):
 def all_products(response: Response):
     try:
         data = supabase.table('products').select('*').execute()
-        if data.error:
+        if not data.data:
             response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
             return {"detail": str(data.error)}
         return data.data
@@ -49,15 +57,20 @@ def all_products(response: Response):
 
 
 @router.put("/update/{product_id}")
-def update_product(product_id: int, post: PostProduct, response: Response):
+def update_product(product_id: int, post: UpdateProduct, response: Response):
     try:
         exists = supabase.table('products').select('*').eq('id', product_id).execute()
         if not exists.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {product_id} not found")
 
-        updated = supabase.table('products').update(post.dict()).eq('id', product_id).execute()
+        update_data = {k: v for k, v in post.dict().items() if v is not None}
 
-        if updated.error:
+        if not update_data:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid fields provided for update")
+
+        updated = supabase.table('products').update(update_data).eq('id', product_id).execute()
+
+        if not updated.data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(updated.error))
 
         return updated.data
@@ -78,7 +91,7 @@ def delete_product(product_id: int, response: Response):
 
         deleted = supabase.table('products').delete().eq('id', product_id).execute()
 
-        if deleted.error:
+        if not deleted.data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(deleted.error))
 
         response.status_code = status.HTTP_204_NO_CONTENT
