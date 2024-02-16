@@ -9,6 +9,10 @@ from supabase import create_client
 
 load_dotenv()
 
+supabaseUrl = "https://cvuiuqgykwoicwpavhrs.supabase.co"
+supabaseKey = os.environ.get("SUPABASE_KEY")
+
+supabase = create_client(supabase_url=supabaseUrl, supabase_key=supabaseKey)
 router = APIRouter(
     prefix="/products",
     tags=["Products"]
@@ -28,12 +32,6 @@ class UpdateProduct(BaseModel):
     category: Optional[str] = None
     quantity: Optional[int] = None
     price: Optional[float] = None
-
-
-supabaseUrl = "https://cvuiuqgykwoicwpavhrs.supabase.co"
-supabaseKey = os.environ.get("SUPABASE_KEY")
-
-supabase = create_client(supabase_url=supabaseUrl, supabase_key=supabaseKey)
 
 
 @router.post("/create")
