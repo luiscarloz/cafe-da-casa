@@ -1,4 +1,4 @@
-from fastapi import status, File, UploadFile, Form, HTTPException, Depends, APIRouter, Response
+from fastapi import status, File, UploadFile, HTTPException, APIRouter, Response
 from fastapi.responses import JSONResponse
 import uuid
 from pydantic import BaseModel
@@ -11,7 +11,7 @@ load_dotenv()
 
 router = APIRouter(
     prefix="/products",
-    tags=["products"]
+    tags=["Products"]
 )
 
 
