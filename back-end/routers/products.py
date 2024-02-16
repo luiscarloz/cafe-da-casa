@@ -1,4 +1,6 @@
-from fastapi import APIRouter, status, Response, HTTPException
+from fastapi import status, File, UploadFile, Form, HTTPException, Depends, APIRouter, Response
+from fastapi.responses import JSONResponse
+import uuid
 from pydantic import BaseModel
 from typing import Optional
 import os
@@ -17,6 +19,7 @@ class PostProduct(BaseModel):
     name: str
     category: str
     quantity: int
+    description: str
     price: float
 
 
@@ -34,17 +37,42 @@ supabase = create_client(supabase_url=supabaseUrl, supabase_key=supabaseKey)
 
 
 @router.post("/create")
-def create_product(post: PostProduct, response: Response):
-    if post:
-        data, count = supabase.table('products').insert(post.dict()).execute()
-        return data
-    else:
-        response.status_code = status.HTTP_400_BAD_REQUEST
-        return
+async def create_product(post: PostProduct, image: Optional[UploadFile] = File(None)):
+    product_data = post.dict()
+    if image:
+        try:
+            filename = f"{uuid.uuid4()}-{image.filename}"
+            file_path = f"temp/{filename}"
+
+            with open(file_path, "wb+") as file_object:
+                file_object.write(await image.read())
+
+            bucket_name = "images"
+            storage_path = f"products/{filename}"
+            response = supabase.storage().from_(bucket_name).upload(storage_path, file_path)
+
+            if response.status_code == 200:
+                image_url = supabase.storage().from_(bucket_name).get_public_url(storage_path).data.get('publicURL')
+
+                product_data['image'] = image_url
+            else:
+                raise HTTPException(status_code=500, detail="Failed to upload image")
+
+            os.remove(file_path)
+
+        except Exception as e:
+            raise HTTPException(status_code=500, detail=f"Failed to upload image: {e}")
+
+    data, count = supabase.table('products').insert(product_data).execute()
+
+    if not data:
+        raise HTTPException(status_code=500, detail="Failed to insert product data")
+
+    return JSONResponse(content=data)
 
 
 @router.get("/all")
-def all_products(response: Response):
+async def all_products(response: Response):
     try:
         data = supabase.table('products').select('*').execute()
         if not data.data:
@@ -57,7 +85,7 @@ def all_products(response: Response):
 
 
 @router.put("/update/{product_id}")
-def update_product(product_id: int, post: UpdateProduct, response: Response):
+async def update_product(product_id: int, post: UpdateProduct, response: Response):
     try:
         exists = supabase.table('products').select('*').eq('id', product_id).execute()
         if not exists.data:
@@ -83,7 +111,7 @@ def update_product(product_id: int, post: UpdateProduct, response: Response):
 
 
 @router.delete("/delete/{product_id}")
-def delete_product(product_id: int, response: Response):
+async def delete_product(product_id: int, response: Response):
     try:
         exists = supabase.table('products').select('*').eq('id', product_id).execute()
         if not exists.data:
