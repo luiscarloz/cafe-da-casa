@@ -26,13 +26,14 @@ class PostUsers(BaseModel):
 @router.post("/create")
 def create_user(post: PostUsers, response: Response):
     data = post.dict()
+    data['birthday'] = data['birthday'].isoformat()
     try:
         exists = supabase.table('users').select('*').eq('whatsapp', data['whatsapp']).execute()
         if not exists.data:
             user = supabase.table('users').insert(data).execute()
-            return user.data
+            return user.data[0]
         else:
-            return exists.data
+            return exists.data[0]
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"detail": str(e)}
