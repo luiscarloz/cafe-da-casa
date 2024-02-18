@@ -61,7 +61,7 @@ async def create_order(post: PostOrder):
 
 
 @router.get("/all")
-async def getlist_orders():
+async def list_orders():
     data = await supabase.table("orders").select("*").execute()
 
     if not data.data:
@@ -73,7 +73,7 @@ async def getlist_orders():
 @router.get("/{order_id}")
 async def get_order(order_id: int, response: Response):
     try:
-        exists = supabase.table('orders').select('*').eq('id', order_id).execute()
+        exists = await supabase.table('orders').select('*').eq('id', order_id).execute()
         if not exists.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {order_id} not found")
 

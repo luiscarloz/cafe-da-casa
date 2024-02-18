@@ -24,13 +24,13 @@ class PostUsers(BaseModel):
 
 
 @router.post("/create")
-def create_user(post: PostUsers, response: Response):
+async def create_user(post: PostUsers, response: Response):
     data = post.dict()
     data['birthday'] = data['birthday'].isoformat()
     try:
-        exists = supabase.table('users').select('*').eq('whatsapp', data['whatsapp']).execute()
+        exists = await supabase.table('users').select('*').eq('whatsapp', data['whatsapp']).execute()
         if not exists.data:
-            user = supabase.table('users').insert(data).execute()
+            user = await supabase.table('users').insert(data).execute()
             return user.data[0]
         else:
             return exists.data[0]

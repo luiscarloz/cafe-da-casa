@@ -50,7 +50,7 @@ async def create_product(post: PostProduct, image: Optional[UploadFile] = File(N
             response = supabase.storage().from_(bucket_name).upload(storage_path, file_path)
 
             if response.status_code == 200:
-                image_url = supabase.storage().from_(bucket_name).get_public_url(storage_path).data.get('publicURL')
+                image_url = await supabase.storage().from_(bucket_name).get_public_url(storage_path).data.get('publicURL')
 
                 product_data['image'] = image_url
             else:
@@ -61,7 +61,7 @@ async def create_product(post: PostProduct, image: Optional[UploadFile] = File(N
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Failed to upload image: {e}")
 
-    data, count = supabase.table('products').insert(product_data).execute()
+    data, count = await supabase.table('products').insert(product_data).execute()
 
     if not data:
         raise HTTPException(status_code=500, detail="Failed to insert product data")
@@ -72,7 +72,7 @@ async def create_product(post: PostProduct, image: Optional[UploadFile] = File(N
 @router.get("/all")
 async def all_products(response: Response):
     try:
-        data = supabase.table('products').select('*').execute()
+        data = await supabase.table('products').select('*').execute()
         if not data.data:
             response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
             return {"detail": str(data.error)}
@@ -85,7 +85,7 @@ async def all_products(response: Response):
 @router.put("/update/{product_id}")
 async def update_product(product_id: int, post: UpdateProduct, response: Response):
     try:
-        exists = supabase.table('products').select('*').eq('id', product_id).execute()
+        exists = await supabase.table('products').select('*').eq('id', product_id).execute()
         if not exists.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {product_id} not found")
 
@@ -94,7 +94,7 @@ async def update_product(product_id: int, post: UpdateProduct, response: Respons
         if not update_data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid fields provided for update")
 
-        updated = supabase.table('products').update(update_data).eq('id', product_id).execute()
+        updated = await supabase.table('products').update(update_data).eq('id', product_id).execute()
 
         if not updated.data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(updated.error))
@@ -111,11 +111,11 @@ async def update_product(product_id: int, post: UpdateProduct, response: Respons
 @router.delete("/delete/{product_id}")
 async def delete_product(product_id: int, response: Response):
     try:
-        exists = supabase.table('products').select('*').eq('id', product_id).execute()
+        exists = await supabase.table('products').select('*').eq('id', product_id).execute()
         if not exists.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {product_id} not found")
 
-        deleted = supabase.table('products').delete().eq('id', product_id).execute()
+        deleted = await supabase.table('products').delete().eq('id', product_id).execute()
 
         if not deleted.data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(deleted.error))
