@@ -99,4 +99,3 @@ async def get_order(order_id: int, response: Response):
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"detail": str(e)}
-
