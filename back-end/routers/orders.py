@@ -29,6 +29,7 @@ class PostOrder(BaseModel):
     order_status: str
     order_details: List[PostDetail]
 
+
 class UpdateOrder(BaseModel):
     payment_status: Optional[str] = None
     order_status: Optional[str] = None
