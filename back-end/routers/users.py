@@ -28,12 +28,12 @@ async def create_user(post: PostUsers, response: Response):
     data = post.dict()
     data['birthday'] = data['birthday'].isoformat()
     try:
-        exists = await supabase.table('users').select('*').eq('whatsapp', data['whatsapp']).execute()
+        exists = supabase.table('users').select('*').eq('whatsapp', data['whatsapp']).execute()
         if not exists.data:
-            user = await supabase.table('users').insert(data).execute()
-            return user.data[0]
+            user = supabase.table('users').insert(data).execute()
+            return user.data[0], status.HTTP_201_CREATED
         else:
-            return exists.data[0]
+            return exists.data[0], status.HTTP_200_OK
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"detail": str(e)}

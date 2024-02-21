@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, status, HTTPException
 from pydantic import BaseModel
 from supabase import create_client
 from dotenv import load_dotenv
-from typing import List, Optional
+from typing import List
 import os
 
 load_dotenv()
