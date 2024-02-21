@@ -84,13 +84,9 @@ async def all_products(response: Response):
 
 
 @router.put("/update/{product_id}")
-async def update_product(post: UpdateProduct, response: Response):
-    product_id = post.product_id
+async def update_product(product_id: int, post: UpdateProduct, response: Response):
+    product_id = product_id
     try:
-        exists = await supabase.table('products').select('*').eq('id', product_id).execute()
-        if not exists.data:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {product_id} not found")
-
         update_data = {k: v for k, v in post.dict().items() if v is not None}
 
         if not update_data:
@@ -113,10 +109,6 @@ async def update_product(post: UpdateProduct, response: Response):
 @router.delete("/delete/{product_id}")
 async def delete_product(product_id: int, response: Response):
     try:
-        exists = await supabase.table('products').select('*').eq('id', product_id).execute()
-        if not exists.data:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {product_id} not found")
-
         deleted = await supabase.table('products').delete().eq('id', product_id).execute()
 
         if not deleted.data:

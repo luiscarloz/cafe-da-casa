@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, status, HTTPException
 from pydantic import BaseModel
 from supabase import create_client
 from dotenv import load_dotenv
-from typing import List
+from typing import List, Optional
 import os
 
 load_dotenv()
@@ -25,9 +25,13 @@ class PostDetail(BaseModel):
 
 class PostOrder(BaseModel):
     user_id: int
-    pay_status: str
+    payment_status: str
     order_status: str
     order_details: List[PostDetail]
+
+class UpdateOrder(BaseModel):
+    payment_status: Optional[str] = None
+    order_status: Optional[str] = None
 
 
 @router.post("/create")
@@ -35,7 +39,7 @@ async def create_order(post: PostOrder):
     order_data = {
         "user_id": post.user_id,
         "total": sum(float(detail.price) * int(detail.quantity) for detail in post.order_details),
-        "pay_status": post.pay_status,
+        "payment_status": post.payment_status,
         "order_status": post.order_status
     }
     order = await supabase.table("orders").upsert(order_data).execute()
@@ -101,3 +105,27 @@ async def get_order(order_id: int, response: Response):
     except Exception as e:
         response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
         return {"detail": str(e)}
+
+
+@router.put("/update/{order_id}")
+async def update_order(order_id: int, post: UpdateOrder, response: Response):
+    order_id = order_id
+    try:
+        update_data = {k: v for k, v in post.dict().items() if v is not None}
+
+        if not update_data:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid fields provided for update")
+
+        updated = await supabase.table('orders').update(update_data).eq('id', order_id).execute()
+
+        if not updated.data:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(updated.error))
+
+        return updated.data
+    except HTTPException as e:
+        response.status_code = e.status_code
+        return {"detail": e.detail}
+    except Exception as e:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"detail": str(e)}
+
