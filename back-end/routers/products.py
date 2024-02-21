@@ -28,6 +28,7 @@ class PostProduct(BaseModel):
 
 
 class UpdateProduct(BaseModel):
+    id: int
     name: Optional[str] = None
     category: Optional[str] = None
     quantity: Optional[int] = None
@@ -83,7 +84,8 @@ async def all_products(response: Response):
 
 
 @router.put("/update/{product_id}")
-async def update_product(product_id: int, post: UpdateProduct, response: Response):
+async def update_product(post: UpdateProduct, response: Response):
+    product_id = post.product_id
     try:
         exists = await supabase.table('products').select('*').eq('id', product_id).execute()
         if not exists.data:

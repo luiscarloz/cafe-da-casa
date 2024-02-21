@@ -2,7 +2,7 @@ from fastapi import APIRouter, Response, status, HTTPException
 from pydantic import BaseModel
 from supabase import create_client
 from dotenv import load_dotenv
-from typing import List
+from typing import List, Optional
 import os
 
 load_dotenv()
@@ -25,7 +25,16 @@ class PostDetail(BaseModel):
 
 class PostOrder(BaseModel):
     user_id: int
+    pay_status: str
     order_details: List[PostDetail]
+
+
+class UpdateOrder(BaseModel):
+    order_id: int
+    pay_status: Optional[str] = None
+    order_status: Optional[str] = None
+    price: Optional[str] = None
+    order_details: Optional[List[PostDetail]] = None
 
 
 @router.post("/create")
@@ -33,8 +42,8 @@ async def create_order(post: PostOrder):
     order_data = {
         "user_id": post.user_id,
         "total": sum(detail.price * detail.quantity for detail in post.order_details),
-        "pay_status": 1,
-        "order_status": 1
+        "pay_status": post.pay_status,
+        "order_status": 'pending'
     }
     order = await supabase.table("orders").upsert(order_data).execute()
     if not order.data:
@@ -92,6 +101,44 @@ async def get_order(order_id: int, response: Response):
         }
 
         return response_data
+
+    except HTTPException as e:
+        response.status_code = e.status_code
+        return {"detail": e.detail}
+    except Exception as e:
+        response.status_code = status.HTTP_500_INTERNAL_SERVER_ERROR
+        return {"detail": str(e)}
+
+
+@router.put("/update/{order_id}")
+async def update_order(post: UpdateOrder, response: Response):
+    order_id = post.order_id
+    try:
+        exists = await supabase.table('orders').select('*').eq('id', order_id).execute()
+        if not exists.data:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {order_id} not found")
+
+        updated_data = {k: v for k, v in post.dict(exclude={'order_details'}).items() if v is not None}
+
+        if updated_data:
+            await supabase.table('orders').update(updated_data).eq('id', order_id).execute()
+        else:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"No valid fields provided for update")
+
+        if post.order_details:
+            order_details_data = [
+                {
+                    "product_id": detail.product_id,
+                    "quantity": detail.quantity,
+                    "price": detail.price,
+                    "order_id": order_id,
+                }
+                for detail in post.order_details
+            ]
+
+            await supabase.table('order_details').upsert(order_details_data).execute()
+
+        return status.HTTP_200_OK
 
     except HTTPException as e:
         response.status_code = e.status_code
