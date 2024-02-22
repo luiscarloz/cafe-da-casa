@@ -69,7 +69,7 @@ async def create_order(post: PostOrder):
 
 @router.get("/all")
 async def list_orders():
-    data = supabase.table("orders").select("*").execute()
+    data = supabase.table("orders").select("*").order('created_at').execute()
 
     if not data.data:
         raise HTTPException(status_code=500, detail="Failed to retrieve orders data")

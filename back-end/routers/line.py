@@ -21,7 +21,7 @@ router = APIRouter(
 async def get_line():
     orders = supabase.table('orders').select('id, created_at, detail_id, user_id, pay_status, order_status, users(name)').eq(
         'order_status', 'pending'
-    ).execute()
+    ).order('created_at').execute()
 
     line_data = []
     for order in orders.data:
