@@ -43,7 +43,7 @@ async def create_order(post: PostOrder):
         "payment_status": post.payment_status,
         "order_status": post.order_status
     }
-    order = await supabase.table("orders").upsert(order_data).execute()
+    order = supabase.table("orders").upsert(order_data).execute()
     if not order.data:
         raise HTTPException(status_code=500, detail="Failed to create order")
 
@@ -58,10 +58,10 @@ async def create_order(post: PostOrder):
         }
         for detail in post.order_details
     ]
-    order_detail_response = await supabase.table("order_details").upsert(order_details_data).execute()
+    order_detail_response = supabase.table("order_details").upsert(order_details_data).execute()
 
     if not order_detail_response.data:
-        await supabase.table("orders").delete().eq("id", order_id).execute()
+        supabase.table("orders").delete().eq("id", order_id).execute()
         raise HTTPException(status_code=500, detail="Failed to create order details")
 
     return {"order_id": order_id, "message": "Order created successfully"}, status.HTTP_201_CREATED
@@ -69,7 +69,7 @@ async def create_order(post: PostOrder):
 
 @router.get("/all")
 async def list_orders():
-    data = await supabase.table("orders").select("*").execute()
+    data = supabase.table("orders").select("*").execute()
 
     if not data.data:
         raise HTTPException(status_code=500, detail="Failed to retrieve orders data")
@@ -80,11 +80,11 @@ async def list_orders():
 @router.get("/{order_id}")
 async def get_order(order_id: int, response: Response):
     try:
-        exists = await supabase.table('orders').select('*').eq('id', order_id).execute()
+        exists = supabase.table('orders').select('*').eq('id', order_id).execute()
         if not exists.data:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Product with ID {order_id} not found")
 
-        order_details = await supabase.table('order_details').select('*').eq('order_id', order_id).execute()
+        order_details = supabase.table('order_details').select('*').eq('order_id', order_id).execute()
 
         response_data = {
             "order_id": order_id,
@@ -117,7 +117,7 @@ async def update_order(order_id: int, post: UpdateOrder, response: Response):
         if not update_data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No valid fields provided for update")
 
-        updated = await supabase.table('orders').update(update_data).eq('id', order_id).execute()
+        updated = supabase.table('orders').update(update_data).eq('id', order_id).execute()
 
         if not updated.data:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(updated.error))

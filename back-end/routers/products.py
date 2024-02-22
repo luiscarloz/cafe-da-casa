@@ -28,7 +28,6 @@ class PostProduct(BaseModel):
 
 
 class UpdateProduct(BaseModel):
-    id: int
     name: Optional[str] = None
     category: Optional[str] = None
     quantity: Optional[int] = None
