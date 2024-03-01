@@ -4,11 +4,18 @@
     height: 100vh;
     background-color: rgba(0, 0, 0, 0.700);
 }
+.loading-container {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
 .cart-modal {
     display: flex;
     position: absolute;
     bottom: 0%;
-    min-height: 30%;
+    min-height: 40%;
     width: 100%;
     background: #fff;
     color: black;
@@ -18,18 +25,20 @@
     align-items: center;
     justify-content: space-between;;
 }
+
 .fechar-pedido-btn {
     border: none;
     border-radius: 25px;
-    margin-bottom: 5px;
-    width: 75% ;
-    height: 35px;
+    margin-bottom: 10px;
+    margin-top: 15px;
+    width: 75%;
+    height: 50px;
     color: #fff;
     background: black;
     text-align: center;
     font-family: "DM Sans", sans-serif;
     font-weight: 600;
-    font-size: 13px;
+    font-size: 15px;
     letter-spacing: 1px;
     cursor: pointer;
 }
@@ -40,12 +49,12 @@
     text-decoration: underline;
     border: none;
     color: black;
-    margin-bottom: 10px;
+    margin-bottom: 15px;
     background-color: transparent;
     text-align: center;
     font-family: "DM Sans", sans-serif;
     font-weight: 500;
-    font-size: 11px;
+    font-size: 14px;
     cursor: pointer;
 }
 .btn-remove {
@@ -55,3 +64,194 @@
 .btn-remove svg {
     margin-bottom: -3px;
 }
+.cart-title-itens-ctn {
+    text-align: center;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.cart-title-itens-ctn img{
+    margin-top: 20px;
+    margin-bottom: 20px;
+    
+}
+.itens-ctn {
+    display: flex;
+    border-top: 1px solid rgba(0, 0, 0, 0.200);
+    justify-content: space-between;
+    font-size: 18px;
+    height: 55px;
+    width: 90%;
+    align-items: center;
+}
+.itens-label {
+    margin-right: 5px;
+}
+
+.itens-price {
+    font-weight: 600;
+}
+
+.modal-ctn {
+    height: 100vh;
+    width: 100%;
+    display: flex;
+    background-color: #000000de;
+    align-items: center;
+    justify-content: center;
+}
+.modal-ctn form{
+    width: 80%;
+    position: relative;
+    display: flex;
+    height: 48vh;
+    background: #ad8e56;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    justify-content: flex-end;
+    border-radius: 35px 
+}
+
+.modal-ctn h1{
+    width: 60%;
+    color: #fff;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 600;
+    font-size: 20px;
+    margin-bottom: 35px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.modal-ctn form input{
+    width: 75%;
+    display: flex;
+    border: none;
+    padding: 8px;
+    box-sizing: border-box;
+    height: 30px;
+    background-color: transparent;
+    color: white;
+    border-bottom: 2px solid white;
+    margin-bottom: 15px;   
+}
+.modal-ctn input::placeholder {
+    color: #ffffff42;
+  }
+.submit-btn {
+    width: 50%;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 25px;
+    border: none;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    background: black;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: 1px;
+    cursor: pointer;
+    color: #fff;
+}
+
+.cancel-order-btn {
+    text-decoration: underline;
+    border: none;
+    color: black;
+    margin-bottom: 30px;
+    background-color: transparent;
+    text-align: center;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+    cursor: pointer;    
+}
+
+.modal-ctn h2{
+    width: 75%;
+    color: #fff;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+    margin: 0px;
+}
+
+input:focus {
+    border-radius: 2px; 
+    outline: none
+}
+
+.local-pagamento-modal {
+    background: #ad8e56;
+    width: 80%;
+    display: flex;
+    height: 48vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: 35px 
+}
+
+.local-pagamento-modal button {
+    border-radius: 25px;
+    background-color: #ad8e56;
+    border: 1px solid white;
+    color: white;
+    height: 55px;
+    margin: 10px;
+    width: 50%;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 600;
+    font-size: 16px;
+}
+.btn-close {
+    background-color: transparent;
+    border: none;
+    position: absolute;
+    top: 11%;
+    right: 5%;
+}
+
+.pix-pagamento-ctn {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    position: absolute;
+    background: #ad8e56;
+    width: 80%;
+    display: flex;
+    height: 48vh;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-around;
+    border-radius: 35px;
+}
+.pix-pagamento-ctn p {
+    font-weight: 500;
+    font-size: 13px;
+    margin-bottom: 20px;
+    color: white;
+    text-align: center;
+}
+.pix-pagamento-ctn h1 {
+    width: 80%;
+    color: #fff;
+    font-family: "DM Sans", sans-serif;
+    font-weight: 600;
+    font-size: 23px;
+    margin-bottom: 35px;
+    margin-top: 30px;
+    text-align: center;
+}
+.pix-pagamento-ctn h2 { 
+    margin-bottom: 5px;
+    text-align: center;
+    padding: 6px;
+    background-color: #614411;
+    border-radius: 10px
+ }
