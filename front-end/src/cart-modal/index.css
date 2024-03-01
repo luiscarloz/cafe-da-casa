@@ -16,6 +16,7 @@
     position: absolute;
     bottom: 0%;
     min-height: 40%;
+    max-height: 98%;
     width: 100%;
     background: #fff;
     color: black;
@@ -44,6 +45,7 @@
 }
 .btns-container {
     text-align: center;
+    margin-bottom: 15%
 }
 .continuar-pedido-btn { 
     text-decoration: underline;
