@@ -186,7 +186,7 @@ const calcularTotal = () => {
                   <div className='pix-pagamento-ctn'>
                     <h1 style={{marginBottom: 0}}>Pedido Confirmado!</h1>
                     <h1 style={{marginTop: 0, marginBottom: 15}}>#{orderId}</h1> 
-                    <h2 style={{marginBottom: 5}}>Aguardando Pagamento <br /> no balcão...</h2>
+                    <h2 style={{marginBottom: 5}}>Quando você receber uma mensagem no seu WhatsApp para retirada, vá ao balcão realizar o pagamento...</h2>
                     <p style={{width: '80%'}}>Assim que seu pedido estiver pronto, você receberá uma mensagem para a retirada!<br /> Caso não receba a mensagem em 20 minutos, se direcione até o balcão.</p>
                     <p>O Café da Casa agradece, Deus abençoe!</p>
                   </div>
