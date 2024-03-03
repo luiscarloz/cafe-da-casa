@@ -186,7 +186,7 @@ const Checkout = ({ items, userId }) => {
                     </g>
                   </svg>
                 <h1 style={{marginBottom: 5}}>Pedido Confirmado!</h1>
-                <h1 style={{marginTop: 0, marginBottom: 25}}>ATENÇÃO: Após o pagamento do pix, <strong>retorne para esta página</strong> para concluir o pedido!</h1>  
+                <h2 style={{marginTop: 0, marginBottom: 25}}>ATENÇÃO: Após o pagamento do pix, retorne para esta página para concluir o pedido!</h2>  
                 <h1 style={{marginTop: 0, marginBottom: 25}}>#{orderId} | R${totalPrice}</h1>  
                 <p style={{width: '80%'}}>Assim que seu pedido estiver pronto, você receberá uma mensagem para a retirada!<br /> Caso não receba a mensagem em 20 minutos, se direcione até o balcão.</p>
                 <p>O Café da Casa agradece, Deus abençoe!</p>
